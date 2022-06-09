@@ -34,6 +34,17 @@ class AdminController extends Controller {
 
         return $content;
     }
+
+    // Fonction permettant la création d'une classe (formulaire)
+    private function displayAddClassAction(){
+        $view = file_get_contents('view/page/admin/formClassAdd.php');
+
+        ob_start();
+        eval('?>' . $view);
+        $content = ob_get_clean();
+
+        return $content;
+    }
     
     // La fonction va chercher le projet que la personne aimerait modifier
     // Puis va répertorier toutes les classes et groupes du projet pour ensuite afficher le formulaire de modification de projet
@@ -58,6 +69,22 @@ class AdminController extends Controller {
         $task = $adminRepository->findAll();
         $view = file_get_contents('view/page/admin/formTaskAdd.php');
 
+
+        ob_start();
+        eval('?>' . $view);
+        $content = ob_get_clean();
+
+        return $content;
+    }
+
+    // Va afficher le lien entre un élève et une classe
+    private function displayLinkStudentAction(){
+        $adminRepository = new AdminRepository();
+
+        $students = $adminRepository->findAll();
+        $clagro = $adminRepository->findAllClagro();
+
+        $view = file_get_contents('view/page/admin/formStudentLink.php');
 
         ob_start();
         eval('?>' . $view);
@@ -107,6 +134,38 @@ class AdminController extends Controller {
         header('location:index.php?controller=dashboard&action=list');
     }
 
+    // Fonction ajoutant une classe à la base de données
+    private function addClassAction() {
+        $adminRepository = new AdminRepository();
+
+        // On récupére le nom de la classe entrée
+        $claName = trim($_POST['claName']);
+
+        // On regarde si le nom est vide
+        if(empty($claName)){
+            $errorMsg = 'Le nom est vide';
+            $view = file_get_contents('view/page/admin/formClassAdd.php');
+            ob_start();
+            eval('?>' . $view);
+            return ob_get_clean();
+        }
+
+        // On essaye de créer la classe
+        $error = $adminRepository->createClaGro($claName);
+
+        // Si il y a une erreur
+        if($error == false) {
+            $errorMsg = 'Le nom existe déjà';
+            $view = file_get_contents('view/page/admin/formClassAdd.php');
+            ob_start();
+            eval('?>' . $view);
+            return ob_get_clean();
+        }
+
+        // redirection sur la dashboard
+        header('location:index.php?controller=dashboard&action=list');
+    }
+
     // Ajouter une tâche à un projet
     private function addTaskAction() {
         $adminRepository = new AdminRepository();
@@ -124,6 +183,36 @@ class AdminController extends Controller {
         header('location:index.php?controller=dashboard&action=list');
     }
 
+    // Va chercher toutes les tâches du projet et affiche le formulaire de modification de tâche
+    private function displayEditTaskAction(){
+        $adminRepository = new AdminRepository();
+        $task = $adminRepository->findOneTask($_GET['id']);
+        $view = file_get_contents('view/page/admin/formTaskEdit.php');
+
+        ob_start();
+        eval('?>' . $view);
+        $content = ob_get_clean();
+
+        return $content;
+    }
+
+    // Modifie une tâche d'un projet
+    private function editTaskAction() {
+        $adminRepository = new AdminRepository();
+
+        // récolte les données du formulaire d'ajout de tâche
+        $tasName = $_POST['tasName'];
+        $tasStart = $_POST['tasStart'];
+        $tasEnd = $_POST['tasEnd'];
+        $tasDescription = $_POST['tasDescription'];
+        $tasId = $_GET['id'];
+
+        // envoi des données au repository afin de créer la tâche dans la base de données
+        $resultProject = $adminRepository->editTask($tasName, $tasStart, $tasEnd, $tasDescription, $tasId);
+        // redirection sur la dashboard
+        header('location:index.php?controller=dashboard&action=list');
+    }
+
     // Affiche la page de monitoring pour les enseignants
     private function visualizeAction() {
         $adminRepository = new AdminRepository();
@@ -132,6 +221,10 @@ class AdminController extends Controller {
         $DashboardRepository = new DashboardRepository();
         // Va chercher les tâches du projet
         $tasks = $DashboardRepository->findTasks($_GET['id']);
+        // Va chercher le projet
+        $project = $DashboardRepository->findOneProject($_GET['id'])[0];
+        // Va chercher les infos sur la classe / groupe
+        $clagro = $DashboardRepository->findClagro($_GET['id'])[0];
         // Affiche la page de monitoring
         $view = file_get_contents('view/page/admin/visualize.php');
 
@@ -141,6 +234,60 @@ class AdminController extends Controller {
         $content = ob_get_clean();
 
         return $content;
+    }
+
+    private function displayLinkStudentActionWithError($error) {
+        $adminRepository = new AdminRepository();
+        $students = $adminRepository->findAll();
+        $clagro = $adminRepository->findAllClagro();
+        $errorMsg = $error;
+
+        $view = file_get_contents('view/page/admin/formStudentLink.php');
+
+        ob_start();
+        eval('?>' . $view);
+        $content = ob_get_clean();
+
+        return $content;
+    }
+
+    public function linkUserAction() {
+
+        // On récupére les valeurs
+        $mail = $_POST['useEmail'];
+        $idClass = $_POST['claName'];
+
+        // Check si elles sont vident
+        if(empty($mail) || empty($idClass)) {
+            $errorMsg = 'Une donnée est vide';
+            return $this->displayLinkStudentActionWithError($errorMsg);
+        }
+
+        // On essaye de récupérer la personne
+        $adminRepository = new AdminRepository();
+        $find = $adminRepository->findOneUser($mail);
+
+        // Si l'email est introuvable
+        if(!isset($find) || !is_array($find) || count($find) == 0) {
+            $errorMsg = 'Email introuvable';
+            return $this->displayLinkStudentActionWithError($errorMsg);
+        }
+
+        // On récupére l'id
+        $idUser = $find[0]['idUser'];
+
+        // On essaye de récupérer le lien
+        $find = $adminRepository->findOneAppartenir($idUser, $idClass);
+        if(isset($find) && is_array($find) && count($find) > 0) {
+            $errorMsg = 'Lien déjà éxistant';
+            return $this->displayLinkStudentActionWithError($errorMsg);
+        }
+
+        // On crée le lien
+        $adminRepository->createAppartenirLink($idUser, $idClass);
+
+        // redirection sur la dashboard
+        header('location:index.php?controller=dashboard&action=list');
     }
 }
 ?>

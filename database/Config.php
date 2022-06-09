@@ -11,7 +11,7 @@
 
 $MM_CONFIG = array(
     'database' => array(
-        'dbname'    => 'db_monitorprogress',
+        'dbname'    => 'db_monitorprogess',
         'username'  => 'root',
         'password'  => '.Etml-',
         'host'      => 'localhost',

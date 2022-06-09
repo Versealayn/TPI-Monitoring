@@ -28,11 +28,7 @@ date_default_timezone_set('Europe/Zurich');
 
 class MainController {
 
-    /**
-     * Constructor for view display
-     *
-     * @return void
-     */
+    // Si GET n'a pas de controller, attribue la fonction indexAction de la page HomeController
     public function dispatch() {
 
         if (!isset($_GET['controller'])) {
@@ -44,12 +40,7 @@ class MainController {
         $this->viewBuild($currentLink);
     }
 
-    /**
-     * Selected the page current
-     *
-     * @param string $page
-     * @return string $link
-     */
+    // Créer une nouvelle classe selon le $_GET['controller]
     protected function menuSelected ($page) {
 
         switch($_GET['controller']){
@@ -70,12 +61,7 @@ class MainController {
         return $link;
     }
 
-    /**
-     * Build the view for display pages
-     *
-     * @param $currentPage
-     * @return void
-     */
+    // Construit la vue pour afficher le site web
     protected function viewBuild($currentPage) {
         $content = $currentPage->display();
 
@@ -87,14 +73,10 @@ class MainController {
             include(dirname(__FILE__) . '/view/navbar.php');
         }
         echo $content;
-        #include(dirname(__FILE__) . '/view/header.html');
-        #include(dirname(__FILE__) . '/view/menu.php');
         include(dirname(__FILE__) . '/view/footer.html');
     }
 }
 
-/**
- * Display WebSite
- */
+// Affichage
 $controller = new MainController();
 $controller->dispatch();

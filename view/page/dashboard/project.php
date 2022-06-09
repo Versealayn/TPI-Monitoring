@@ -40,9 +40,13 @@ else{
         
         echo '
         <div class=\'lg:flex w-4/5 mx-auto rounded-lg bg-gray-200 mb-5\'>
-            <div class=\'w-full lg:w-11/12 xl:w-full px-1  py-5 lg:px-2 lg:py-2 tracking-wide\'>  
+            <div class=\'task-name w-full lg:w-11/12 xl:w-full px-1  py-5 lg:px-2 lg:py-2 tracking-wide\'>
                 <div class=\'font-semibold text-gray-800 text-xl text-center lg:text-left px-2\'>
                     '.$task['tasName'].'
+                </div>
+
+                <div class=\'hidden-description font-semibold\'>
+                    <p>'.$task['tasDescription'].'</p>
                 </div>
 
                 <div class=\'text-gray-600 font-medium text-sm pt-1 text-center lg:text-left px-2\'>
@@ -50,9 +54,12 @@ else{
                 </div>
             </div>';
             if ($_SESSION['user']['userRight'] == 'teacher'){
-                echo' <div class=\'flex flex-row items-center w-full lg:w-1/3 lg:justify-end justify-center mb-3 mr-4 lg:px-0\'>
+                echo' <div class=\'flex flex-row items-center w-full flex-1 justify-center mb-3 mr-4 ml-4 lg:px-0\'>
+                    <a href=\'index.php?controller=admin&action=displayEditTask&id='.$task['idTask'].'\' class=\'mr-1 w-28 bg-gray-400 hover:bg-gray-500 text-white text-xl font-bold py-2 px-4 border-b-4 border-gray-500 hover:border-gray-600 rounded mt-4\'>
+                        Modifier
+                    </a>
                     <button onclick=alert(\'nonㅤimplémentéㅤ(nonㅤdemandéㅤparㅤleㅤcahierㅤdesㅤcharges)\') class=\'w-100  bg-red-400 hover:bg-red-500 text-white text-xl font-bold py-2 px-4 border-b-4 border-red-600 hover:border-red-700 rounded mt-4\'>
-                    Supprimer
+                        Supprimer
                     </button>
             </div>';
             }

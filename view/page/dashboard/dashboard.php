@@ -5,8 +5,18 @@ if (!(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true)) {
 if ($_SESSION['user']['userRight'] == 'teacher'){
     echo '<div class=\'w-4/5 mx-auto\'>
     <a href=\'index.php?controller=admin&action=displayAddProject\'>
-            <button class=\'w-100  bg-green-400 hover:bg-green-500 text-white text-xl font-bold py-2 px-4 border-b-4 border-green-600 hover:border-green-700 rounded mt-4\'>
+            <button class=\'w-100 bg-green-400 hover:bg-green-500 text-white text-xl font-bold py-2 px-4 border-b-4 border-green-600 hover:border-green-700 rounded mt-4\'>
             + Créer un projet
+            </button>
+        </a>
+        <a href=\'index.php?controller=admin&action=displayAddClass\'>
+            <button class=\'w-100 bg-green-400 hover:bg-green-500 text-white text-xl font-bold py-2 px-4 border-b-4 border-green-600 hover:border-green-700 rounded mt-4\'>
+            + Créer une classe
+            </button>
+        </a>
+        <a href=\'index.php?controller=admin&action=displayLinkStudent\'>
+            <button class=\'w-100 bg-green-400 hover:bg-green-500 text-white text-xl font-bold py-2 px-4 border-b-4 border-green-600 hover:border-green-700 rounded mt-4\'>
+            + Lier un élève
             </button>
         </a>
         </div>

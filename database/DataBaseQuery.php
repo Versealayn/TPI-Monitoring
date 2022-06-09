@@ -94,6 +94,7 @@ class DataBaseQuery
         $query = 'INSERT INTO ' . $table . ' ' . $columns . ' VALUES ' . $values ;   
 
         $req = $this->connection->prepare($query);
+        
         return $req->execute();
     }
 
@@ -101,7 +102,7 @@ class DataBaseQuery
     public function update($table, $columns, $where) {
         $query = 'UPDATE ' . $table . ' SET ' . $columns . ' WHERE ' . $where;
         $req = $this->connection->prepare($query);
-   
+        
         return $req->execute();
     }
 
